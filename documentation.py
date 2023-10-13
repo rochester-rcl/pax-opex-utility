@@ -58,5 +58,5 @@ def about():
     print('''PAX-OPEX Utility created by John Dewees
 email: john.dewees@rocheter.edu
 code4lib Slack username: @John Dewees
-Version 1.0
-Last Updated: 2023-10-12''')
+Version 1.1.0
+Last Updated: 2023-10-13''')
