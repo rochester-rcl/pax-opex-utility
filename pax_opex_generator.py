@@ -34,9 +34,13 @@ preing_workord_frame = sg.Frame('Work Order Spreadsheet Information', [
 preing_fileext_frame = sg.Frame('Preservation/Access File Extensions', [
                     [sg.Text('Preservation', size=12, justification='right'), sg.Input(size=5, default_text ='.tif', key='-PRES-'), sg.Text('Access', size=12, justification='right'), sg.Input(size=5, default_text='.pdf', key='-ACC-'), sg.Push()]], expand_x=True, pad=5)
 
+preing_options_frame = sg.Frame('Options', [[sg.Text('Format Dates', size=18, justification='right'), sg.Checkbox('', default=sg.user_settings_get_entry('format dates', default=True), key='-DATES-')],
+                                            [sg.Text('Filename Delimiter'), sg.Input(size=1, default_text=sg.user_settings_get_entry('file delimiter', default='-'), key='-DELIMITER-')]], expand_x=True, pad=5)
+
 tab1 = sg.Tab('Pre-Ingest', [[preing_projfol_frame],
                              [preing_workord_frame],
                              [preing_fileext_frame],
+                             [preing_options_frame],
                              [sg.Push(), sg.Button('Create PAX Objects and OPEX Metadata', pad=(10, 5)), sg.Push()]], key='-TAB_1-')
 
 posting_pres_frame = sg.Frame('Preservica Administrator Credentials',
@@ -86,6 +90,8 @@ while True:
     max_row = values['-MAXROW-']
     rep_pres = values['-PRES-']
     rep_acc = values['-ACC-']
+    format_dates = values['-DATES-']
+    filename_delimiter = values['-DELIMITER-']
     username = values['-USERNAME-']
     password = values['-PASSWORD-']
     tenancy = values['-TENANCY-']
@@ -99,6 +105,8 @@ while True:
     if event in (sg.WIN_CLOSED, 'Exit'):
         break
     if event == 'Save':
+        sg.user_settings_set_entry('format dates', values['-DATES-'])
+        sg.user_settings_set_entry('file delimiter', values['-DELIMITER-'])
         sg.user_settings_set_entry('username', values['-USERNAME-'])
         sg.user_settings_set_entry('password', values['-PASSWORD-'])
         sg.user_settings_set_entry('tenancy', values['-TENANCY-'])
