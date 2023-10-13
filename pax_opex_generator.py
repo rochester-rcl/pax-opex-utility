@@ -2,6 +2,7 @@ import PySimpleGUI as sg
 from preservica_pre_ingest import *
 from preservica_post_ingest import *
 from documentation import *
+from utilities import *
 from icon import icon
 
 ur_theme = {'BACKGROUND': '#003B71',
@@ -67,7 +68,13 @@ tab2 = sg.Tab('Post-Ingest', [[posting_pres_frame],
                             [posting_refid_frame],
                             [posting_qc_frame]], key='-TAB_2-')
 
-opscol = sg.TabGroup([[tab1, tab2]], pad=5, key='-TAB_GROUP-')
+reports_frame = sg.Frame('Reports', [[sg.Text('Output Storage Size of Given Folder')],
+                                     [sg.Text('Folder Ref:'), sg.Input(size=(36,1), key='-FOLDER_SIZE-')],
+                                     [sg.Button('Generate Storage Report on Folder', pad=(10, 5))]], expand_x=True, pad=5)
+
+tab3 = sg.Tab('Utilities', [[reports_frame]], key='-TAB_3-')
+
+opscol = sg.TabGroup([[tab1, tab2, tab3]], pad=5, key='-TAB_GROUP-')
 
 settings_frame = sg.Frame('Settings',
                     [[sg.Button('Save', font=(button_font), pad=5), sg.Button('Display', font=(button_font), pad=5)]], pad=5)
@@ -102,6 +109,7 @@ while True:
     aspace_folder = values['-ASPACE-']
     trash_folder = values['-TRASH-']
     qual_control = values['-QC-']
+    folder_size = values['-FOLDER_SIZE-']
     if event in (sg.WIN_CLOSED, 'Exit'):
         break
     if event == 'Save':
@@ -110,7 +118,7 @@ while True:
         sg.user_settings_set_entry('username', values['-USERNAME-'])
         sg.user_settings_set_entry('password', values['-PASSWORD-'])
         sg.user_settings_set_entry('tenancy', values['-TENANCY-'])
-        sg.user_settings_set_entry('server', values['-SERVER-'])
+        sg.user_settings_set_entry('server', values['-SERVER-'])    
         sg.user_settings_set_entry('twofa_cb', values['-2FACB-'])
         sg.user_settings_set_entry('twofa_value', values['-2FA-'])
         sg.user_settings_set_entry('opex', values['-OPEX-'])
@@ -147,6 +155,8 @@ while True:
         move_aspace_trash(window, mline, username, password, tenancy, server, twofactorcb, twofactorkey, aspace_folder, trash_folder)
     if event == 'Quality Control':
         quality_control(window, mline, username, password, tenancy, server, twofactorcb, twofactorkey, qual_control, work_order, work_sheet, max_row)
+    if event == 'Generate Storage Report on Folder':
+        folder_desc_size(window, mline, username, password, tenancy, server, twofactorcb, twofactorkey, folder_size)
     if event == 'Help':
         if values['-TAB_GROUP-'] == '-TAB_1-':
             mline.update('')
