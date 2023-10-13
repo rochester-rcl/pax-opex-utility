@@ -54,9 +54,15 @@ Next the Utility will loop through each of the newly stored Preservica Reference
 ***QUALITY ASSURANCE PASSED***
 If there is a problem, then a dictionary of filenames and checksums will be output that can be used to investigate problems.''')
     
+def utilities_documentation():
+    print('''PRESERVICA UTILITY FUNCTIONS
+-----------------------------------------------------------
+REPORTS
+The "Output Storage Size of Given Folder" function allows the user to input the Ref ID for a given folder and get a report of how much storage the assets that it contains take up. Like many aspects of this Utility program that involve making API calls to Preservica, this process can take a fair amount of time to generate a report on hundreds or thousands of individual files. The output window will display the filename and size in bytes for each discrete file in a given folder. The summary in green at the end of the report will display the folder title, folder Ref ID, and the total size of all the files in bytes, GB, and TB.''')
+    
 def about():
     print('''PAX-OPEX Utility created by John Dewees
 email: john.dewees@rocheter.edu
 code4lib Slack username: @John Dewees
-Version 1.1.0
+Version 1.2.0
 Last Updated: 2023-10-13''')
