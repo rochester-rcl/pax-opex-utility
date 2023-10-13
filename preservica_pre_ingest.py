@@ -64,7 +64,7 @@ def file_hash_list(window, mline, projpath):
     window.refresh()
 
 #This function creates paths to the folders and files and then moves the files to their respective folders.
-def folder_ds_files(window, mline, projpath):
+def folder_ds_files(window, mline, projpath, filename_delimiter):
     mline.update('----CREATING FOLDER STRUCTURE FOR PRESERVATION MASTERS----\n', append=True, text_color_for_value='white', background_color_for_value='red')
     window.refresh()
     folder_count = 0
@@ -74,8 +74,8 @@ def folder_ds_files(window, mline, projpath):
     folder_list = list()
     for file in os.listdir(path = path_container):
         file_root = file.split('.')[0].strip()
-        if '-' in file_root:
-            file_root = file_root.split('-')[0].strip()
+        if filename_delimiter in file_root:
+            file_root = file_root.split(filename_delimiter)[0].strip()
         if file_root not in folder_list:
             folder_list.append(file_root)
             loop_count += 1
@@ -207,7 +207,7 @@ def create_pax(window, mline, projpath):
 
 #this function creates the OPEX metadata file that accompanies an individual zipped PAX package
 #this function also includes the metadata necessary for ArchivesSpace sync to Preservica
-def pax_metadata(window, mline, projpath, workorder, worksheet, maxrow):
+def pax_metadata(window, mline, projpath, workorder, worksheet, maxrow, format_dates):
     mline.update('---CREATING METADATA FILES FOR PAX OBJECTS----\n', append=True, text_color_for_value='white', background_color_for_value='red')
     window.refresh()
     wb = load_workbook(workorder)
@@ -230,9 +230,12 @@ def pax_metadata(window, mline, projpath, workorder, worksheet, maxrow):
                     title = ws.cell(row = iterrow, column = titlecol).value
                     if '&' in title:
                         title = title.replace('&', 'and')
-                    date_full = ws.cell(row = iterrow, column = datecol).value
-                    date_formatted = aspace_dates(date_full)
-                    display_title = '{title}{date_formatted}'.format(title=title, date_formatted=date_formatted)
+                    if format_dates == True:
+                        date_full = ws.cell(row = iterrow, column = datecol).value
+                        date_formatted = aspace_dates(date_full)
+                        display_title = '{title}{date_formatted}'.format(title=title, date_formatted=date_formatted)
+                    else:
+                        display_title = '{title}'.format(title=title)
                     opex = '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <opex:OPEXMetadata xmlns:opex="http://www.openpreservationexchange.org/opex/v1.0">
     <opex:Transfer>
