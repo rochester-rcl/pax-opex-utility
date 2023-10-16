@@ -139,10 +139,10 @@ while True:
         create_container(window, mline, proj_path, work_order)
         if manifest == True:
             file_hash_list(window, mline, proj_path)
-        folder_ds_files(window, mline, proj_path)
+        folder_ds_files(window, mline, proj_path, filename_delimiter)
         representation_preservation_access(window, mline, proj_path, rep_pres, rep_acc)
         create_pax(window, mline, proj_path)
-        pax_metadata(window, mline, proj_path, work_order, work_sheet, max_row)
+        pax_metadata(window, mline, proj_path, work_order, work_sheet, max_row, format_dates)
         ao_opex_metadata(window, mline, proj_path, work_order, work_sheet, max_row)
         opex_container_metadata(window, mline, proj_path)
         mline.update('----PAX OBJECTS AND OPEX METADATA CREATED----\n', append=True, text_color_for_value='yellow', background_color_for_value='blue')
@@ -165,6 +165,10 @@ while True:
         if values['-TAB_GROUP-'] == '-TAB_2-':
             mline.update('')
             post_ingest_documentation()
+            mline.set_vscroll_position(0)
+        if values['-TAB_GROUP-'] == '-TAB_3-':
+            mline.update('')
+            utilities_documentation()
             mline.set_vscroll_position(0)
     if event == 'Clear':
         mline.update('')
