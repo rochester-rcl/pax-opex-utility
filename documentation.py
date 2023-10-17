@@ -38,6 +38,6 @@ def about(window, mline, update_color):
     mline.update('''PAX-OPEX Utility created by John Dewees
 email: john.dewees@rocheter.edu
 code4lib Slack username: @John Dewees
-Version 1.3.0
+Version 1.3.1
 Last Updated: 2023-10-17''', append=True, text_color_for_value=update_color)
     window.refresh()
