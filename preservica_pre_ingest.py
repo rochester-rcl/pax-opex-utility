@@ -8,7 +8,7 @@ from datetime import datetime
 from pyrsistent import thaw
 from zipfile import ZipFile
 from os.path import basename
-from cleanup_dates import *
+from cleanup_dates import aspace_dates
 from openpyxl import load_workbook
 
 mincol = 2
@@ -24,8 +24,8 @@ container = ''
 
 #this function takes the folder containing all the preservation masters and renames to be the "container" folder which will ultimately be used for OPEX incremental ingest
 #also creates a "project_log.txt" file to store variables so that an ingest project can be worked on over multiple sessions
-def create_container(window, mline, projpath, work_order):
-    mline.update('----CREATING CONTAINER----\n', text_color_for_value='white', background_color_for_value='red')
+def create_container(window, mline, init_color, summary_color, projpath, work_order):
+    mline.update('[START] CREATING CONTAINER\n', text_color_for_value=init_color)
     window.refresh()
     now = datetime.now()
     date_time = now.strftime('%Y-%m-%d_%H-%M-%S')
@@ -38,34 +38,41 @@ def create_container(window, mline, projpath, work_order):
             continue
         else:
             shutil.move(os.path.join(projpath, file), os.path.join(projpath, container, file))
-    mline.update('Container directory: {} and moved digital assets into it\n'.format(container), append=True, text_color_for_value='white', background_color_for_value='green')
+    mline.update('[SUMMARY] Container directory: {} and moved digital assets into it\n\n'.format(container), append=True, text_color_for_value=summary_color)
     window.refresh()
 
-def file_hash_list(window, mline, projpath):
-    mline.update('----CREATING LIST OF FILES AND CHECKSUMS----\n', append=True, text_color_for_value='white', background_color_for_value='red')
+def file_hash_list(window, mline, alt_background, init_color, update_color, summary_color, projpath, alg_choice):
+    mline.update('[START] CREATING LIST OF FILES AND CHECKSUMS\n', append=True, text_color_for_value=init_color)
     window.refresh()
     path_container = os.path.join(projpath, container)
     file_count = 0
     with open(os.path.join(projpath, container + '.csv'), mode='w', newline='') as csv_file:
         csv_writer = csv.writer(csv_file)
+        if alg_choice == 'MD5':
+                csv_writer.writerow(['File Name', 'MD5 Checksum'])
+        elif alg_choice == 'SHA-1':
+                csv_writer.writerow(['File Name', 'SHA-1 Checksum'])
         for file in os.listdir(path = path_container):
             file_hand = open(os.path.join(path_container, file), 'rb')
             file_read = file_hand.read()
-            sha1_checksum = hashlib.sha1(file_read).hexdigest()
-            csv_writer.writerow([file, sha1_checksum])
+            if alg_choice == 'MD5':
+                checksum = hashlib.md5(file_read).hexdigest()
+            elif alg_choice == 'SHA-1':
+                checksum = hashlib.sha1(file_read).hexdigest()
+            csv_writer.writerow([file, checksum])
             file_count += 1
             if (file_count % 2) == 0:
-                mline.update('file: {} checksum: {}\n'.format(file, sha1_checksum), append=True, text_color_for_value='black', background_color_for_value='white')
+                mline.update('[UPDATE] file: {} checksum: {}\n'.format(file, checksum), append=True, text_color_for_value=update_color)
                 window.refresh()
             else:
-                mline.update('file: {} checksum: {}\n'.format(file, sha1_checksum), append=True, text_color_for_value='white', background_color_for_value='black')
+                mline.update('[UPDATE] file: {} checksum: {}\n'.format(file, checksum), append=True, text_color_for_value=update_color, background_color_for_value=alt_background)
                 window.refresh()
-    mline.update('Generated checksums for {} files\n'.format(file_count), append=True, text_color_for_value='white', background_color_for_value='green')
+    mline.update('[SUMMARY] Generated checksums for {} files\n\n'.format(file_count), append=True, text_color_for_value=summary_color)
     window.refresh()
 
 #This function creates paths to the folders and files and then moves the files to their respective folders.
-def folder_ds_files(window, mline, projpath, filename_delimiter):
-    mline.update('----CREATING FOLDER STRUCTURE FOR PRESERVATION MASTERS----\n', append=True, text_color_for_value='white', background_color_for_value='red')
+def folder_ds_files(window, mline, alt_background, init_color, update_color, summary_color, projpath, filename_delimiter):
+    mline.update('[START] CREATING FOLDER STRUCTURE FOR PRESERVATION MASTERS\n', append=True, text_color_for_value=init_color)
     window.refresh()
     folder_count = 0
     file_count = 0
@@ -80,20 +87,20 @@ def folder_ds_files(window, mline, projpath, filename_delimiter):
             folder_list.append(file_root)
             loop_count += 1
             if (loop_count % 2) == 0:
-                mline.update('added {} to folder_list\n'.format(file_root), append=True, text_color_for_value='black', background_color_for_value='white')
+                mline.update('[UPDATE] added {} to folder_list\n'.format(file_root), append=True, text_color_for_value=update_color)
                 window.refresh()
             else:
-                mline.update('added {} to folder_list\n'.format(file_root), append=True, text_color_for_value='white', background_color_for_value='black')
+                mline.update('[UPDATE] added {} to folder_list\n'.format(file_root), append=True, text_color_for_value=update_color, background_color_for_value=alt_background)
                 window.refresh()
     for file_root in folder_list:
         path_folder = os.path.join(path_container, file_root)
         os.mkdir(path_folder)
         loop_count += 1
         if (loop_count % 2) == 0:
-            mline.update('created {}\n'.format(path_folder), append=True, text_color_for_value='black', background_color_for_value='white')
+            mline.update('[UPDATE] created {}\n'.format(path_folder), append=True, text_color_for_value=update_color)
             window.refresh()
         else:
-            mline.update('created {}\n'.format(path_folder), append=True, text_color_for_value='white', background_color_for_value='black')
+            mline.update('[UPDATE] created {}\n'.format(path_folder), append=True, text_color_for_value=update_color)
             window.refresh()
         folder_count += 1
     for file in os.listdir(path = path_container):
@@ -108,20 +115,20 @@ def folder_ds_files(window, mline, projpath, filename_delimiter):
             shutil.move(path_file, path_folder)
             loop_count += 1
             if (loop_count % 2) == 0:
-                mline.update('moved {} to {}\n'.format(path_file, path_folder), append=True, text_color_for_value='black', background_color_for_value='white')
+                mline.update('[UPDATE] moved {} to {}\n'.format(path_file, path_folder), append=True, text_color_for_value=update_color)
                 window.refresh()
             else:
-                mline.update('moved {} to {}\n'.format(path_file, path_folder), append=True, text_color_for_value='white', background_color_for_value='black')
+                mline.update('[UPDATE] moved {} to {}\n'.format(path_file, path_folder), append=True, text_color_for_value=update_color, background_color_for_value=alt_background)
                 window.refresh()
             file_count += 1
-    mline.update('created {} folders\n'.format(folder_count), append=True, text_color_for_value='white', background_color_for_value='green')
-    mline.update('moved {} files\n'.format(file_count), append=True, text_color_for_value='white', background_color_for_value='green')
+    mline.update('[SUMMARY] created {} folders\n'.format(folder_count), append=True, text_color_for_value=summary_color)
+    mline.update('[SUMMARY] moved {} files\n\n'.format(file_count), append=True, text_color_for_value=summary_color)
     window.refresh()
 
 #this function begins to create the PAX structure
 #putting PDFs in Representation_Access folders and TIFFs in Representation_Preservation folders
-def representation_preservation_access(window, mline, projpath, rep_pres, rep_acc):
-    mline.update('----CREATING REPRESENTATION FOLDERS AND MOVING ASSETS INTO THEM----\n', append=True, text_color_for_value='white', background_color_for_value='red')
+def representation_preservation_access(window, mline, alt_background, init_color, update_color, summary_color, projpath, rep_pres, rep_acc):
+    mline.update('[START] CREATING REPRESENTATION FOLDERS AND MOVING ASSETS INTO THEM\n', append=True, text_color_for_value=init_color)
     window.refresh()
     folder_count = 0
     file_count = 0
@@ -146,12 +153,12 @@ def representation_preservation_access(window, mline, projpath, rep_pres, rep_ac
                 shutil.move(path_directoryfile, os.path.join(path_acc, file_name, file))
                 loop_count += 1
                 if (loop_count % 2) == 0:
-                    mline.update('created directory: {}\n'.format(path_acc + '/' + file_name), append=True, text_color_for_value='black', background_color_for_value='white')
-                    mline.update('moved file: {}\n'.format(path_acc + '/' + file_name + '/' + file), append=True, text_color_for_value='black', background_color_for_value='white')
+                    mline.update('[UPDATE] created directory: {}\n'.format(path_acc + '/' + file_name), append=True, text_color_for_value=update_color)
+                    mline.update('[UPDATE] moved file: {}\n'.format(path_acc + '/' + file_name + '/' + file), append=True, text_color_for_value=update_color)
                     window.refresh()
                 else:
-                    mline.update('created directory: {}\n'.format(path_acc + '/' + file_name), append=True, text_color_for_value='white', background_color_for_value='black')
-                    mline.update('moved file: {}\n'.format(path_acc + '/' + file_name + '/' + file), append=True, text_color_for_value='white', background_color_for_value='black')
+                    mline.update('[UPDATE] created directory: {}\n'.format(path_acc + '/' + file_name), append=True, text_color_for_value=update_color, background_color_for_value=alt_background)
+                    mline.update('[UPDATE] moved file: {}\n'.format(path_acc + '/' + file_name + '/' + file), append=True, text_color_for_value=update_color, background_color_for_value=alt_background)
                     window.refresh()
                 file_count += 1
                 window.refresh()
@@ -161,22 +168,22 @@ def representation_preservation_access(window, mline, projpath, rep_pres, rep_ac
                 shutil.move(path_directoryfile, os.path.join(path_pres, file_name, file))
                 loop_count += 1
                 if (loop_count % 2) == 0:
-                    mline.update('created directory: {}\n'.format(path_pres + '/' + file_name), append=True, text_color_for_value='black', background_color_for_value='white')
-                    mline.update('moved file: {}\n'.format(path_pres + '/' + file_name + '/' + file), append=True, text_color_for_value='black', background_color_for_value='white')
+                    mline.update('[UPDATE] created directory: {}\n'.format(path_pres + '/' + file_name), append=True, text_color_for_value=update_color)
+                    mline.update('[UPDATE] moved file: {}\n'.format(path_pres + '/' + file_name + '/' + file), append=True, text_color_for_value=update_color)
                     window.refresh()
                 else:
-                    mline.update('created directory: {}\n'.format(path_pres + '/' + file_name), append=True, text_color_for_value='white', background_color_for_value='black')
-                    mline.update('moved file: {}\n'.format(path_pres + '/' + file_name + '/' + file), append=True, text_color_for_value='white', background_color_for_value='black')
+                    mline.update('[UPDATE] created directory: {}\n'.format(path_pres + '/' + file_name), append=True, text_color_for_value=update_color, background_color_for_value=alt_background)
+                    mline.update('[UPDATE] moved file: {}\n'.format(path_pres + '/' + file_name + '/' + file), append=True, text_color_for_value=update_color, background_color_for_value=alt_background)
                     window.refresh()
                 file_count += 1
                 window.refresh()
-    mline.update('Created {} Representation directories | Moved {} files into created directories\n'.format(folder_count, file_count), append=True, text_color_for_value='white', background_color_for_value='green')
+    mline.update('[SUMMARY] Created {} Representation directories | Moved {} files into created directories\n\n'.format(folder_count, file_count), append=True, text_color_for_value=summary_color)
     window.refresh()
 
 #this function stages the "Representation_" folders for each asset inside a new directory,
 #then zipes the files into individual PAX objects and deletes the source files
-def create_pax(window, mline, projpath):
-    mline.update('----CREATING PAX OBJECTS----\n', append=True, text_color_for_value='white', background_color_for_value='red')
+def create_pax(window, mline, alt_background, init_color, update_color, summary_color, projpath):
+    mline.update('[START] CREATING PAX OBJECTS\n', append=True, text_color_for_value=init_color)
     window.refresh()
     pax_count = 0
     path_container = os.path.join(projpath, container)
@@ -197,18 +204,18 @@ def create_pax(window, mline, projpath):
         pax_count += 1
         shutil.rmtree(path_paxstage)
         if (pax_count % 2) == 0:
-            mline.update('created {}\n'.format(str(pax_count) + ': ' + directory + '.pax.zip'), append=True, text_color_for_value='black', background_color_for_value='white')
+            mline.update('[UPDATE] created {}\n'.format(str(pax_count) + ': ' + directory + '.pax.zip'), append=True, text_color_for_value=update_color)
             window.refresh()
         else:
-            mline.update('created {}\n'.format(str(pax_count) + ': ' + directory + '.pax.zip'), append=True, text_color_for_value='white', background_color_for_value='black')
+            mline.update('[UPDATE] created {}\n'.format(str(pax_count) + ': ' + directory + '.pax.zip'), append=True, text_color_for_value=update_color, background_color_for_value=alt_background)
             window.refresh()
-    mline.update('Created {} PAX objects\n'.format(pax_count), append=True, text_color_for_value='white', background_color_for_value='green')
+    mline.update('[SUMMARY] Created {} PAX objects\n\n'.format(pax_count), append=True, text_color_for_value=summary_color)
     window.refresh()
 
 #this function creates the OPEX metadata file that accompanies an individual zipped PAX package
 #this function also includes the metadata necessary for ArchivesSpace sync to Preservica
-def pax_metadata(window, mline, projpath, workorder, worksheet, maxrow, format_dates):
-    mline.update('---CREATING METADATA FILES FOR PAX OBJECTS----\n', append=True, text_color_for_value='white', background_color_for_value='red')
+def pax_metadata(window, mline, alt_background, init_color, update_color, summary_color, projpath, workorder, worksheet, maxrow, format_dates):
+    mline.update('[START] CREATING METADATA FILES FOR PAX OBJECTS\n', append=True, text_color_for_value=init_color)
     window.refresh()
     wb = load_workbook(workorder)
     ws = wb[worksheet]
@@ -261,19 +268,19 @@ def pax_metadata(window, mline, projpath, workorder, worksheet, maxrow, format_d
                     pax_md_hand.close()
                     dir_count += 1
                     if (dir_count % 2) == 0:
-                        mline.update('created {}\n'.format(filename), append=True, text_color_for_value='black', background_color_for_value='white')
+                        mline.update('[UPDATE] created {}\n'.format(filename), append=True, text_color_for_value=update_color)
                         window.refresh()
                     else:
-                        mline.update('created {}\n'.format(filename), append=True, text_color_for_value='white', background_color_for_value='black')
+                        mline.update('[UPDATE] created {}\n'.format(filename), append=True, text_color_for_value=update_color, background_color_for_value=alt_background)
                         window.refresh()
             iterrow += 1
-    mline.update('Created {} OPEX metdata files for individual assets\n'.format(dir_count), append=True, text_color_for_value='white', background_color_for_value='green')
+    mline.update('[SUMMARY] Created {} OPEX metdata files for individual assets\n\n'.format(dir_count), append=True, text_color_for_value=summary_color)
     window.refresh()
 
 #this function matches directory names (based on CUID) with archival object numbers from work order spreadsheet
 #this metadata is another facet required for ArchivesSpace to Preservica synchronization
-def ao_opex_metadata(window, mline, projpath, workorder, worksheet, maxrow):
-    mline.update('----CREATE ARCHIVAL OBJECT OPEX METADATA----\n', append=True, text_color_for_value='white', background_color_for_value='red')
+def ao_opex_metadata(window, mline, alt_background, init_color, update_color, summary_color, projpath, workorder, worksheet, maxrow):
+    mline.update('[START] CREATE ARCHIVAL OBJECT OPEX METADATA\n', append=True, text_color_for_value=init_color)
     window.refresh()
     wb = load_workbook(workorder)
     ws = wb[worksheet]
@@ -309,20 +316,20 @@ def ao_opex_metadata(window, mline, projpath, workorder, worksheet, maxrow):
                     os.replace(path_directory, os.path.join(path_container, ao_num))
                     time.sleep(1)
                     if (file_count % 2) == 0:
-                        mline.update('processed folder metadata in new folder: {}\n'.format(ao_num), append=True, text_color_for_value='black', background_color_for_value='white')
+                        mline.update('[UPDATE] processed folder metadata in new folder: {}\n'.format(ao_num), append=True, text_color_for_value=update_color)
                         window.refresh()
                     else:
-                        mline.update('processed folder metadata in new folder: {}\n'.format(ao_num), append=True, text_color_for_value='white', background_color_for_value='black')
+                        mline.update('[UPDATE] processed folder metadata in new folder: {}\n'.format(ao_num), append=True, text_color_for_value=update_color, background_color_for_value=alt_background)
                         window.refresh()
 
             iterrow += 1
-    mline.update('Created {} archival object metadata files\n'.format(file_count), append=True, text_color_for_value='white', background_color_for_value='green')
+    mline.update('[SUMMARY] Created {} archival object metadata files\n\n'.format(file_count), append=True, text_color_for_value=summary_color)
     window.refresh()
 
 #this function creates the last OPEX metadata file required for the OPEX incremental ingest, for the container folder
 #this OPEX file has the folder manifest to ensure that content is ingested properly
-def opex_container_metadata(window, mline, projpath):
-    mline.update('----CREATE CONTAINER OBJECT OPEX METADATA----\n', append=True, text_color_for_value='white', background_color_for_value='red')
+def opex_container_metadata(window, mline, init_color, summary_color, projpath):
+    mline.update('[START] CREATE CONTAINER OBJECT OPEX METADATA\n', append=True, text_color_for_value=init_color)
     window.refresh()
     opex1 = '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <opex:OPEXMetadata xmlns:opex="http://www.openpreservationexchange.org/opex/v1.0">
@@ -339,6 +346,6 @@ def opex_container_metadata(window, mline, projpath):
 </opex:OPEXMetadata>'''
     container_opex_hand = open(os.path.join(projpath, container, container + '.opex'), 'w')
     container_opex_hand.write(opex1 + opex2 + opex3)
-    mline.update('Created OPEX metadata file for {} directory\n'.format(container), append=True, text_color_for_value='white', background_color_for_value='green')
+    mline.update('[SUMMARY] Created OPEX metadata file for {} directory\n\n'.format(container), append=True, text_color_for_value=summary_color)
     window.refresh()
     container_opex_hand.close()
