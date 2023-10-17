@@ -1,8 +1,6 @@
 import re
 
-
 def aspace_dates(aspace_date):
-    date_undated = re.findall('undated', aspace_date)
     date_ymd = re.findall('^creation:\s(\d\d\d\d-\d\d-\d\d)$', aspace_date)
     date_ym = re.findall('^creation:\s(\d\d\d\d-\d\d)$', aspace_date)
     date_y = re.findall('^creation:\s(\d\d\d\d)$', aspace_date)
@@ -55,7 +53,7 @@ def aspace_dates(aspace_date):
         y_converted = '{date_year}'.format(date_year = date_year)
         return y_converted
 
-    if len(date_undated) == 1:
+    if aspace_date == None:
         date_formatted = ' (undated)'
         return date_formatted
 
@@ -135,18 +133,3 @@ def aspace_dates(aspace_date):
 
         date_formatted = ', {date_first_formatted} and {date_second_formatted}'.format(date_first_formatted=date_first_formatted, date_second_formatted=date_second_formatted)
         return date_formatted
-
-# test_date = 'undated'
-# test_date = 'creation: 1801-01-01'
-# test_date = 'creation: 1802-02'
-# test_date = 'creation: 1803'
-# test_date = 'creation: 1804-04--1805-05-05'
-# test_date = 'creation: 1806--1807-07'
-# test_date = 'creation: 1808-08-08--1809-09'
-# test_date = 'creation: 1810--1811'
-# test_date = 'creation: 1812-12-12--1813-01-01'
-# test_date = 'creation: 1814-02-14; creation: 1815-03-15'
-# test_date = 'creation: 1816; creation: 1817-04'
-
-# display_date = aspace_dates(test_date)
-# print(display_date)
