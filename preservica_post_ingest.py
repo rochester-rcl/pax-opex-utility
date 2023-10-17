@@ -111,6 +111,7 @@ def quality_control(window, mline, alt_background, init_color, update_color, sum
             for ident in filter(only_assets, client.identifier("code", ref_id)):
                 asset = client.asset(ident.reference)
                 ws.cell(row = iterrow, column = prescol).value = ident.reference
+        iterrow += 1
     wb.save(workorder)
     preservicalist = list()
     iterrow = 2
