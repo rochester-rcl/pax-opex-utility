@@ -19,20 +19,20 @@ datecol = 12
 filecol = 13
 prescol = 14
 
-def test_connection(window, mline, user_name, pass_word, ten_ancy, ser_ver, two_factorcb, two_factorkey):
-    mline.update('----TESTING CONNECTION TO PRESERVICA----\n', append=True, text_color_for_value='white', background_color_for_value='red')
+def test_connection(window, mline, alt_background, init_color, update_color, summary_color, user_name, pass_word, ten_ancy, ser_ver, two_factorcb, two_factorkey):
+    mline.update('[START] TESTING CONNECTION TO PRESERVICA\n', append=True, text_color_for_value=init_color)
     window.refresh()
     if two_factorcb == True:
         client = EntityAPI(username=user_name, password=pass_word, tenant=ten_ancy, server=ser_ver, two_fa_secret_key=two_factorkey)
     else:
         client = EntityAPI(username=user_name, password=pass_word, tenant=ten_ancy, server=ser_ver)
     root_folders = client.children(None)
-    print(root_folders)
-    mline.update('\n', append=True)
+    root_folders = str(client.children(None))
+    mline.update('[SUMMARY]\n' + root_folders + '\n\n', append=True, text_color_for_value=update_color)
     window.refresh()
     
-def move_opex_aspace(window, mline, user_name, pass_word, ten_ancy, ser_ver, two_factorcb, two_factorkey, opex_folder, aspace_folder):
-    mline.update('----MOVING ASSETS TO PENDING LINK----\n', append=True, text_color_for_value='white', background_color_for_value='red')
+def move_opex_aspace(window, mline, alt_background, init_color, update_color, summary_color, user_name, pass_word, ten_ancy, ser_ver, two_factorcb, two_factorkey, opex_folder, aspace_folder):
+    mline.update('[START] MOVING ASSETS TO PENDING LINK\n', append=True, text_color_for_value=init_color)
     window.refresh()
     if two_factorcb == True:
         client = EntityAPI(username=user_name, password=pass_word, tenant=ten_ancy, server=ser_ver, two_fa_secret_key=two_factorkey)
@@ -45,17 +45,17 @@ def move_opex_aspace(window, mline, user_name, pass_word, ten_ancy, ser_ver, two
         client.move(entity, aspace_folder)
         count += 1
         if (count % 2) == 0:
-            mline.update('moving item {}\n'.format(str(count)), append=True, text_color_for_value='black', background_color_for_value='white')
+            mline.update('[UPDATE] moving item {}\n'.format(str(count)), append=True, text_color_for_value=update_color)
             window.refresh()
         else:
-            mline.update('moving item {}\n'.format(str(count)), append=True, text_color_for_value='white', background_color_for_value='black')
+            mline.update('[UPDATE] moving item {}\n'.format(str(count)), append=True, text_color_for_value=update_color, background_color_for_value=alt_background)
             window.refresh()
         time.sleep(1)
-    mline.update('moved {} entities\n'.format(str(count)), append=True, text_color_for_value='white', background_color_for_value='green')
+    mline.update('[SUMMARY] moved {} entities\n\n'.format(str(count)), append=True, text_color_for_value=summary_color)
     window.refresh()
 
-def move_aspace_trash(window, mline, user_name, pass_word, ten_ancy, ser_ver, two_factorcb, two_factorkey, aspace_folder, trash_folder):
-    mline.update('----MOVING EMPTY FOLDERS TO TRASH----\n', append=True, text_color_for_value='white', background_color_for_value='red')
+def move_aspace_trash(window, mline, alt_background, init_color, update_color, summary_color, user_name, pass_word, ten_ancy, ser_ver, two_factorcb, two_factorkey, aspace_folder, trash_folder):
+    mline.update('[START] MOVING EMPTY FOLDERS TO TRASH\n', append=True, text_color_for_value=init_color)
     window.refresh()
     if two_factorcb == True:
         client = EntityAPI(username=user_name, password=pass_word, tenant=ten_ancy, server=ser_ver, two_fa_secret_key=two_factorkey)
@@ -73,27 +73,28 @@ def move_aspace_trash(window, mline, user_name, pass_word, ten_ancy, ser_ver, tw
             client.move(entity, dest_folder)
             count += 1
             if (count % 2) == 0:
-                mline.update('moving item {}\n'.format(str(count)), append=True, text_color_for_value='black', background_color_for_value='white')
+                mline.update('[UPDATE] moving item {}\n'.format(str(count)), append=True, text_color_for_value=update_color)
                 window.refresh()
             else:
-                mline.update('moving item {}\n'.format(str(count)), append=True, text_color_for_value='white', background_color_for_value='black')
+                mline.update('[UPDATE] moving item {}\n'.format(str(count)), append=True, text_color_for_value=update_color, background_color_for_value=alt_background)
                 window.refresh()
             time.sleep(1)
-    mline.update('Moved {} folders into the trash\n'.format(str(count)), append=True, text_color_for_value='white', background_color_for_value='green')
+    mline.update('[SUMMARY] Moved {} folders into the trash\n\n'.format(str(count)), append=True, text_color_for_value=summary_color)
     window.refresh()
 
-def quality_control(window, mline, user_name, password, tenancy, server, twofactorcb, twofactorkey, qual_control, workorder, worksheet, maxrow):
-    mline.update('---STARTING QA---\n', append=True, text_color_for_value='white', background_color_for_value='red')
+def quality_control(window, mline, alt_background, init_color, update_color, summary_color, user_name, password, tenancy, server, twofactorcb, twofactorkey, qual_control, workorder, worksheet, maxrow):
+    mline.update('[START] STARTING QA\n', append=True, text_color_for_value=init_color)
     window.refresh()
     asset_count = 0
-    mline.update('----MAKING DROID DICTIONARY---\n', append=True, text_color_for_value='black', background_color_for_value='white')
+    mline.update('[UPDATE] MAKING DROID DICTIONARY\n', append=True, text_color_for_value=update_color, background_color_for_value=alt_background)
     window.refresh()
     manifestdict = dict()
     with open(qual_control, newline = '') as csvfile:
         reader = csv.reader(csvfile, delimiter = ',', quotechar = '"')
+        next(reader)
         for row in reader: 
                 manifestdict[row[0]] = row[1]
-    mline.update('---MAKING PRESERVICA DICTIONARY----\n', append=True, text_color_for_value='white', background_color_for_value='black')
+    mline.update('[UPDATE] MAKING PRESERVICA DICTIONARY\n', append=True, text_color_for_value=update_color)
     window.refresh()
     if twofactorcb == True:
         client = EntityAPI(username=user_name, password=password, tenant=tenancy, server=server, two_fa_secret_key=twofactorkey)
@@ -113,7 +114,6 @@ def quality_control(window, mline, user_name, password, tenancy, server, twofact
     wb.save(workorder)
     preservicalist = list()
     iterrow = 2
-    dir_count = 0
     for row in ws.iter_rows(min_row = minrow, min_col = mincol, max_row = maximumrow, max_col = maxcol):
         for cell in row:
             preservicalist.append(ws.cell(row = iterrow, column = prescol).value)
@@ -129,14 +129,15 @@ def quality_control(window, mline, user_name, password, tenancy, server, twofact
                         filename = bitstream.filename 
                         for algorithm,value in bitstream.fixity.items():
                             preservicadict[filename] = value    
-    mline.update('----COMPARING DICTIONARIES----\n', append=True, text_color_for_value='black', background_color_for_value='white')
+    mline.update('[UPDATE] COMPARING DICTIONARIES\n', append=True, text_color_for_value=update_color, background_color_for_value=alt_background)
     window.refresh()
     diff = DeepDiff(preservicadict, manifestdict, verbose_level=2)
     if len(diff) == 0:
-        mline.update('***QUALITY ASSURANCE PASSED***\n', append=True, text_color_for_value='yellow', background_color_for_value='blue')
+        mline.update('[SUMMARY] QUALITY ASSURANCE PASSED\n\n', append=True, text_color_for_value=summary_color)
         window.refresh()
     else:
-        mline.update('***ERROR ENCOUNTERED***\n', append=True, text_color_for_value='red', background_color_for_value='black')
-        mline.update('REVIEW OUTPUT BELOW FOR PROBLEMS\n', append=True, text_color_for_value='red', background_color_for_value='black')
-        print(diff)
+        mline.update('[SUMMARY] ERROR ENCOUNTERED\n', append=True, text_color_for_value=summary_color)
+        mline.update('REVIEW OUTPUT BELOW FOR PROBLEMS\n', append=True, text_color_for_value=summary_color)
+        diff_str = str(diff)
+        mline.update(diff_str + '\n', append=True, text_color_for_value=summary_color)
         window.refresh()
