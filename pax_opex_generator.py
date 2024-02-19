@@ -5,15 +5,14 @@ from documentation import pre_ingest_documentation, post_ingest_documentation, u
 from utilities import folder_desc_size
 from icon import icon
 
-ur_theme = {'BACKGROUND': '#003B71',
-            'TEXT': '#FFFFFF',
-            'INPUT': '#FFFFFF',
-            'TEXT_INPUT': '#000000',
-            'SCROLL': '505F69',
-            'BUTTON': ('#000000', '#FFD100'),
-            'PROGRESS': ('#000000', '#FFD100'),
-            'BORDER': 1, 'SLIDER_DEPTH': 0, 'PROGRESS_DEPTH': 0
-            }
+vsc_theme = {'BACKGROUND': '#252525',
+            'TEXT': '#7edcf0',
+            'INPUT': '#181818',
+            'TEXT_INPUT': '#5dd495',
+            'SCROLL': '#252525',
+            'BUTTON': ('#dcdca1', '#181818'),
+            'PROGRESS': ('#dcdca1', '#181818'),
+            'BORDER': 1, 'SLIDER_DEPTH': 0, 'PROGRESS_DEPTH': 0}
 
 alt_background = '#181818'
 init_color = '#5dd495'
@@ -23,8 +22,8 @@ conclusion_color = '#e4a177'
 button_font = 'Courier 14'
 program_icon = icon()
 sg.set_options(font='Courier 12')
-sg.theme_add_new('UR Theme', ur_theme)
-sg.theme('UR Theme')
+sg.theme_add_new('VSC Theme', vsc_theme)
+sg.theme('VSC Theme')
 sg.user_settings_filename(path='.')
 
 preing_projfol_frame = sg.Frame('Project Folder', [
@@ -94,18 +93,22 @@ tab3 = sg.Tab('Utilities', [
     [reports_frame]
     ], key='-TAB_3-')
 
-ops_col = sg.TabGroup([
+ops_tabgroup = sg.TabGroup([
 [tab1, tab2, tab3]
 ], pad=5, key='-TAB_GROUP-')
+
+ops_col = sg.Column([
+    [ops_tabgroup]
+], vertical_alignment='t')
 
 settings_frame = sg.Frame('Settings', [
         [sg.Button('Save', font=(button_font), pad=5), sg.Button('Display', font=(button_font), pad=5)]
         ], pad=5)
 
 output_col = sg.Column([
-[sg.Output(key='-OUTPUT-', size = (60, 27), background_color='#252525', expand_x=True, pad=5)],
+[sg.Output(key='-OUTPUT-', size = (60, 27), background_color=alt_background, expand_x=True, expand_y=True, pad=5)],
 [settings_frame, sg.Button('Help', font=(button_font), pad=5), sg.Button('Clear', font=(button_font), pad=5), sg.Button('About', font=(button_font), pad=5), sg.Push(), sg.Button('Exit', font=(button_font), pad=5), sg.Sizegrip()]
-], expand_x=True, vertical_alignment='t')
+], expand_x=True, expand_y=True, vertical_alignment='t')
 
 layout = [[ops_col, output_col]]
 
@@ -115,6 +118,8 @@ mline = window['-OUTPUT-']
 
 while True:
     event, values = window.read()
+    if event in (sg.WIN_CLOSED, 'Exit'):
+        break
     proj_path = values['-PROJFOLDER-']
     manifest = values['-MANIFEST-']
     alg_choice = values['-ALG-']
@@ -136,8 +141,6 @@ while True:
     trash_folder = values['-TRASH-']
     qual_control = values['-QC-']
     folder_size = values['-FOLDER_SIZE-']
-    if event in (sg.WIN_CLOSED, 'Exit'):
-        break
     if event == 'Save':
         sg.user_settings_set_entry('generate manifest', values['-MANIFEST-'])
         sg.user_settings_set_entry('algorithm', values['-ALG-'])
