@@ -38,6 +38,9 @@ def about(window, mline, update_color):
     mline.update('''PAX-OPEX Utility created by John Dewees
 email: john.dewees@rocheter.edu
 code4lib Slack username: @John Dewees
-Version 1.3.1
-Last Updated: 2023-10-17''', append=True, text_color_for_value=update_color)
+Version 1.4.0
+Last Updated: 2024-02-19
+------------------------------------
+Chimera icons created by Freepik - Flaticon
+https://www.flaticon.com/free-icons/chimera''', append=True, text_color_for_value=update_color)
     window.refresh()
