@@ -85,7 +85,7 @@ tab2 = sg.Tab('Post-Ingest', [
 
 reports_frame = sg.Frame('Reports', [
         [sg.Text('Output Storage Size of Given Folder')],
-        [sg.Text('Folder Ref:'), sg.Input(size=(36,1), key='-FOLDER_SIZE-')],
+        [sg.Text('Folder Ref:'), sg.Input(size=(36,1), key='-FOLDER_REPORT-')],
         [sg.Button('Generate Storage Report on Folder', pad=(10, 5))]
         ], expand_x=True, pad=5)
 
@@ -140,7 +140,7 @@ while True:
     aspace_folder = values['-ASPACE-']
     trash_folder = values['-TRASH-']
     qual_control = values['-QC-']
-    folder_size = values['-FOLDER_SIZE-']
+    folder_report = values['-FOLDER_REPORT-']
     if event == 'Save':
         sg.user_settings_set_entry('generate manifest', values['-MANIFEST-'])
         sg.user_settings_set_entry('algorithm', values['-ALG-'])
@@ -187,7 +187,7 @@ while True:
     if event == 'Quality Control':
         quality_control(window, mline, alt_background, init_color, update_color, summary_color, username, password, tenancy, server, twofactorcb, twofactorkey, qual_control, work_order, work_sheet, max_row)
     if event == 'Generate Storage Report on Folder':
-        folder_desc_size(window, mline, alt_background, init_color, update_color, summary_color, username, password, tenancy, server, twofactorcb, twofactorkey, folder_size)
+        folder_desc_size(window, mline, alt_background, init_color, update_color, summary_color, username, password, tenancy, server, twofactorcb, twofactorkey, folder_report)
     if event == 'Help':
         if values['-TAB_GROUP-'] == '-TAB_1-':
             mline.update('')
