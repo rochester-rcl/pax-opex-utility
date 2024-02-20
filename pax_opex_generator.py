@@ -84,9 +84,9 @@ tab2 = sg.Tab('Post-Ingest', [
     ], key='-TAB_2-')
 
 reports_frame = sg.Frame('Reports', [
-        [sg.Text('Output Storage Size of Given Folder')],
+        [sg.Text('Generate Report on a Folder (Assets, Files, Size)')],
         [sg.Text('Folder Ref:'), sg.Input(size=(36,1), key='-FOLDER_REPORT-')],
-        [sg.Button('Generate Storage Report on Folder', pad=(10, 5))]
+        [sg.Button('Generate Folder Report', pad=(10, 5))]
         ], expand_x=True, pad=5)
 
 tab3 = sg.Tab('Utilities', [
