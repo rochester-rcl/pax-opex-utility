@@ -1,13 +1,13 @@
 from pyPreservica import *
 
-def folder_desc_size(window, mline, alt_background, init_color, update_color, summary_color, user_name, pass_word, ten_ancy, ser_ver, two_factorcb, two_factorkey, folder_uuid):
+def folder_desc_size(window, mline, alt_background, init_color, update_color, summary_color, username, password, tenancy, server, twofactorcb, twofactorkey, folder_report):
     mline.update('[START] GENERATING STORAGE SIZE REPORT FOR FOLDER\n', append=True, text_color_for_value=init_color)
     window.refresh()
-    if two_factorcb == True:
-        client = EntityAPI(username=user_name, password=pass_word, tenant=ten_ancy, server=ser_ver, two_fa_secret_key=two_factorkey)
+    if twofactorcb == True:
+        client = EntityAPI(username=username, password=password, tenant=tenancy, server=server, two_fa_secret_key=twofactorkey)
     else:
-        client = EntityAPI(username=user_name, password=pass_word, tenant=ten_ancy, server=ser_ver)
-    folder_target = client.folder(folder_uuid)
+        client = EntityAPI(username=username, password=password, tenant=tenancy, server=server)
+    folder_target = client.folder(folder_report)
     folder_size = 0
     total_assets = 0
     total_files = 0
@@ -32,5 +32,7 @@ Title: {title}
 Ref ID: {ref_id}
 Bytes: {bytes}
 GB: {gb}
-TB: {tb}\n'''.format(title=folder_target.title, ref_id=folder_target.reference, bytes=folder_size, gb=folder_gb, tb=folder_tb), append=True, text_color_for_value=summary_color)
+TB: {tb}
+Assets: {num_asset}
+Files: {num_files}\n'''.format(title=folder_target.title, ref_id=folder_target.reference, bytes=folder_size, gb=folder_gb, tb=folder_tb, num_asset=total_assets, num_files=total_files), append=True, text_color_for_value=summary_color)
     window.refresh()
