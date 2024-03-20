@@ -31,12 +31,11 @@ PRESERVICA ADMINISTRATOR CREDENTIALS
 A Preservica account crentials with the role of:  
 SDB_MANAGER_USER (Tenant Manger Role)  
 is necessary in order to complete these actions. Username: typically the email of the account  
-Password: the password of the account  
-Tenancy: the prefix at the start of your Preservica URL for example in "https://uorrcl.access.preservica.com/" the tenancy is "UORRCL" (use all caps)  
-Server: this defaults to the standard US Preservica server name, but update as needed, especially for Enterprise customers  
-Using 2FA Checkbox: if you have two-factor authentication enabled for accounts, check this box  
-2FA Token: enter the token key here from your 2FA setup process. If you already have 2FA set up before using this Utility, you will have to hit the Reset Secret Key in, Preservica, then hit "Forget" and then when you attempt to log back into the system you will be prompted to setup 2FA once again. During this process you can hit a "Reveal Key" option and then copy the key somewhere safe. This page has more information and screenshots:  
-https://pypreservica.readthedocs.io/en/latest/intro.html#factor-authentication
+**Password:** the password of the account  
+**Tenancy:** the prefix at the start of your Preservica URL for example in "https://uorrcl.access.preservica.com/" the tenancy is "UORRCL" (use all caps)  
+**Server:** this defaults to the standard US Preservica server name, but update as needed, especially for Enterprise customers  
+**Using 2FA Checkbox:** if you have two-factor authentication enabled for accounts, check this box  
+**2FA Token:** enter the token key here from your 2FA setup process. If you already have 2FA set up before using this Utility, you will have to hit the Reset Secret Key in, Preservica, then hit "Forget" and then when you attempt to log back into the system you will be prompted to setup 2FA once again. During this process you can hit a "Reveal Key" option and then copy the key somewhere safe. [This page has more information and screenshots.](https://pypreservica.readthedocs.io/en/latest/intro.html#factor-authentication)
 
 TEST CONNECTION
 In order to test to see if the credentials were input correctly, you can hit the "Test Connection" button which will print out all the information about the root folders in your Preservica instance if configured correctly.
