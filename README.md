@@ -28,8 +28,10 @@ POST INGEST QUALITY OF LIFE
 This Utility also has some simple helper functions and quality control capabilities to help manage ingests.  
 
 PRESERVICA ADMINISTRATOR CREDENTIALS  
-A Preservica account crentials with the role of:  
-SDB_MANAGER_USER (Tenant Manger Role)  
+A Preservica account crentials with the role of:
+
+SDB_MANAGER_USER (Tenant Manger Role)
+
 is necessary in order to complete these actions. Username: typically the email of the account  
 **Password:** the password of the account  
 **Tenancy:** the prefix at the start of your Preservica URL for example in "https://uorrcl.access.preservica.com/" the tenancy is "UORRCL" (use all caps)  
@@ -42,9 +44,9 @@ In order to test to see if the credentials were input correctly, you can hit the
           
 PRESERVICA FOLDER REF IDS  
 The Utility can help you move assets from one folder to another in Preservica so you don't have to do a lot of onerous dragging and dropping or keep selecting "Change Archival Structure." Each of these needs the Preservica Reference identifier, the UUID Preservica assigns to each Folder and Asset.  
-OPEX Folder Ref: the folder which the OPEX incremental ingest dumps the digital assets into  
-ASpace Folder Ref: the folder into which the folders representing archival objects are placed before the "Link Preservica to ASpace" workflow is run in Preservica  
-Trash Folder Ref: the folder (which is not mandatory but that I assume most people have) which acts as the recylcing bin for Preservica, where folders/assets are dropped in for deletion  
+**OPEX Folder Ref:** the folder which the OPEX incremental ingest dumps the digital assets into  
+**ASpace Folder Ref:** the folder into which the folders representing archival objects are placed before the "Link Preservica to ASpace" workflow is run in Preservica  
+**Trash Folder Ref:** the folder (which is not mandatory but that I assume most people have) which acts as the recylcing bin for Preservica, where folders/assets are dropped in for deletion  
 Pressing either the "Move From OPEX to ASpace Link" or the "Move From Aspace Link to Trash" will simply move folders between places, saving time from manually dragging and dropping or hitting "Change Archival Structure." These are not mandatory but just try to be helpful. Calling the API in this way tends to only move a chunk of the entities you want moved, typically petering out around 100. Simply hit the button again to resume moving stuff between folders.
 
 QUALITY CONTROL  
