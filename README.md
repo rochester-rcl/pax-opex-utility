@@ -18,7 +18,7 @@ WORK ORDER SPREADSHEET INFORMATION
 Use the Browse button to select the Work Order Spreadsheet in the Project Folder referenced above. When exporting the spreadsheet from ArchivesSpace, make sure to check all the available boxes to ensure the Utility can find the correct columns. The Worksheet Name refers to the relevant tab in Excel that contains the necessary information. The default  value of: "digitization_work_order_report" is what the NYU Plugin outputs, but this can be updated if necessary. Crucially, the "Max Row" value needs to be updated so the Utility understands the bounds of the data. Enter the Row number of the last row with data in the spreadsheet. Do not open the Work Order Spreadsheet while using the Utility, as this can cause errors.
 
 PRESERVATION/ACCESS FILE EXTENSIONS
-This section allows the user to specify which file types in the Project Folder are for preservation and which for access. These will be routed into their respective "Representation" in the Preservica data model. The fields default to ".pdf" for access and ".tif" for preservation which is the typical example use-case for why PAX/OPEX is useful (the "one-to-many" relationship). Please be aware that the file extension needs to be exact. If you are have an error, check your files extensions as there is a difference between ".tif" and ".tiff" for instance.
+This section allows the user to specify which file types in the Project Folder are for preservation and which for access. These will be routed into their respective "Representation" in the Preservica data model. The fields default to ".pdf" for access and ".tif" for preservation which is the typical example use-case for why PAX/OPEX is useful (the "one-to-many" relationship). Please be aware that the file extension needs to be exact. If you have an error, check your files extensions as there is a difference between ".tif" and ".tiff" for instance.
           
 CREATE PAX OBJECTS AND OPEX METADATA
 After filling in the fields in the Utility and hitting the "Create PAX Objects and OPEX Metadata" button, the Utility will start working. Each action the underlying scripts take will be printed to this output window. The final result will be a subdirectory inside the Project Folder you specified that is named "container_YYYY-MM-DD_HH-MM-SS" (referred to hereafter as the "container folder") but with the current date and time. If you opted to generate the file/checksum manifest, that file will also be in the Project Folder with the same name as the container folder. Inside the container folder will be a list of folders that all begin with "archival_object_" which correspond to item level metadata records in ArchiveSpace. Inside each of those will be a zipped PAX object, the associated OPEX metdadata for the PAX, and the associated OPEX metadata for the archival_object_ folder. The container folder can be dragged and dropped with CloudBerry/WinSCP/FileZilla/etc into the AWS Preservica Bulk Bucket. Ensure that inside the root of the Preservica Bulk Bucket you have a folder named "opex" and that you place the container folder inside it. For OPEX Incremental Ingest I generally recommend turning off the inner and outer ingest workflows in Preservica, transferring the container folder, and then turning the workflows back on, as that has resulted in the least errors for me.
@@ -28,24 +28,24 @@ POST INGEST QUALITY OF LIFE
 This Utility also has some simple helper functions and quality control capabilities to help manage ingests.
 
 PRESERVICA ADMINISTRATOR CREDENTIALS
-A Preservica account crentials with the role of:
-SDB_MANAGER_USER (Tenant Manger Role)
-is necessary in order to complete these actions. Username: typically the email of the account
-Password: the password of the account
-Tenancy: the prefix at the start of your Preservica URL for example in "https://uorrcl.access.preservica.com/" the tenancy is "UORRCL" (use all caps)
-Server: this defaults to the standard US Preservica server name, but update as needed, especially for Enterprise customers
-Using 2FA Checkbox: if you have two-factor authentication enabled for accounts, check this box
-2FA Token: enter the token key here from your 2FA setup process. If you already have 2FA set up before using this Utility, you will have to hit the Reset Secret Key in, Preservica, then hit "Forget" and then when you attempt to log back into the system you will be prompted to setup 2FA once again. During this process you can hit a "Reveal Key" option and then copy the key somewhere safe. This page has more information and screenshots:
+A Preservica account crentials with the role of:  
+SDB_MANAGER_USER (Tenant Manger Role)  
+is necessary in order to complete these actions. Username: typically the email of the account  
+Password: the password of the account  
+Tenancy: the prefix at the start of your Preservica URL for example in "https://uorrcl.access.preservica.com/" the tenancy is "UORRCL" (use all caps)  
+Server: this defaults to the standard US Preservica server name, but update as needed, especially for Enterprise customers  
+Using 2FA Checkbox: if you have two-factor authentication enabled for accounts, check this box  
+2FA Token: enter the token key here from your 2FA setup process. If you already have 2FA set up before using this Utility, you will have to hit the Reset Secret Key in, Preservica, then hit "Forget" and then when you attempt to log back into the system you will be prompted to setup 2FA once again. During this process you can hit a "Reveal Key" option and then copy the key somewhere safe. This page has more information and screenshots:  
 https://pypreservica.readthedocs.io/en/latest/intro.html#factor-authentication
 
 TEST CONNECTION
 In order to test to see if the credentials were input correctly, you can hit the "Test Connection" button which will print out all the information about the root folders in your Preservica instance if configured correctly.
           
 PRESERVICA FOLDER REF IDS
-The Utility can help you move assets from one folder to another in Preservica so you don't have to do a lot of onerous dragging and dropping or keep selecting "Change Archival Structure." Each of these needs the Preservica Reference identifier, the UUID Preservica assigns to each Folder and Asset.
-OPEX Folder Ref: the folder which the OPEX incremental ingest dumps the digital assets into
-ASpace Folder Ref: the folder into which the folders representing archival objects are placed before the "Link Preservica to ASpace" workflow is run in Preservica
-Trash Folder Ref: the folder (which is not mandatory but that I assume most people have) which acts as the recylcing bin for Preservica, where folders/assets are dropped in for deletion
+The Utility can help you move assets from one folder to another in Preservica so you don't have to do a lot of onerous dragging and dropping or keep selecting "Change Archival Structure." Each of these needs the Preservica Reference identifier, the UUID Preservica assigns to each Folder and Asset.  
+OPEX Folder Ref: the folder which the OPEX incremental ingest dumps the digital assets into  
+ASpace Folder Ref: the folder into which the folders representing archival objects are placed before the "Link Preservica to ASpace" workflow is run in Preservica  
+Trash Folder Ref: the folder (which is not mandatory but that I assume most people have) which acts as the recylcing bin for Preservica, where folders/assets are dropped in for deletion  
 Pressing either the "Move From OPEX to ASpace Link" or the "Move From Aspace Link to Trash" will simply move folders between places, saving time from manually dragging and dropping or hitting "Change Archival Structure." These are not mandatory but just try to be helpful. Calling the API in this way tends to only move a chunk of the entities you want moved, typically petering out around 100. Simply hit the button again to resume moving stuff between folders.
 
 QUALITY CONTROL
